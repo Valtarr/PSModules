@@ -1,3 +1,15 @@
+function SetDebug {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true, Position = 0, HelpMessage = 'Enables/disables current scope Debugging')]
+        [bool]$Enabled
+    )
+    
+    process {
+        Set-Variable -Name 'IsDebugEnabled' -Value $Enabled -Scope 1
+    }
+}
+
 function Write-Message {
     [CmdletBinding()]
     param (
@@ -13,6 +25,8 @@ function Write-Message {
     )
     
     process {
+        if ( $Type -eq 'Debug' -and -not $IsDebugEnabled) { return }
+
         [ConsoleColor]$markBackground = switch ( $Type ) {
             'Warning' { [ConsoleColor]::Yellow }
             'Error' { [ConsoleColor]::Red }
