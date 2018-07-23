@@ -4,9 +4,23 @@ function SetDebug {
         [Parameter(Mandatory = $true, Position = 0, HelpMessage = 'Enables/disables current scope Debugging')]
         [bool]$Enabled
     )
-    
     process {
         Set-Variable -Name 'IsDebugEnabled' -Value $Enabled -Scope 1
+    }
+}
+
+function Write-FramedText {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true, Position = 0)]
+        [string]$Text,
+        [Parameter(Mandatory = $false)]
+        [int]$Ident = 0
+    )
+    process {
+        Write-Host (" " * $Ident) -NoNewline; Write-Host "$([char]0x2554)$([char]0x2550)" -NoNewline; Write-Host ("$([char]0x2550)" * $Text.Length) -NoNewline; Write-Host "$([char]0x2550)$([char]0x2557)"
+        Write-Host (" " * $Ident) -NoNewline; Write-Host "$([char]0x2551) " -NoNewline; Write-Host $Text -NoNewline;                Write-Host " $([char]0x2551)"
+        Write-Host (" " * $Ident) -NoNewline; Write-Host "$([char]0x255A)$([char]0x2550)" -NoNewline; Write-Host ("$([char]0x2550)" * $Text.Length) -NoNewline; Write-Host "$([char]0x2550)$([char]0x255D)"
     }
 }
 
@@ -23,7 +37,6 @@ function Write-Message {
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, Position = 0)]
         [string]$Message
     )
-    
     process {
         if ( $Type -eq 'Debug' -and -not $IsDebugEnabled) { return }
 
@@ -70,7 +83,6 @@ function Write-Exception {
         [Parameter(Mandatory = $false, ValueFromPipeline = $false, HelpMessage = 'Write timestamp to console')]
         [switch]$Time = $false
     )
-    
     process {
         Write-Message -Type Error -Time $Time "$($Exception.GetType()): $($Exception.Message)"
     }
